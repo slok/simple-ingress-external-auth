@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/slok/simple-ingress-external-auth/internal/metrics"
 	"github.com/slok/simple-ingress-external-auth/internal/model"
 )
 
@@ -110,5 +111,15 @@ func newDisabledAuthenticator() authenticater {
 		}
 
 		return &reviewResult{Valid: false, Reason: reasonDisabledToken}, nil
+	})
+}
+
+func newMeasuredAuthenticator(metricsRec metrics.Recorder, a authenticater) authenticater {
+	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
+		res, err := a.Authenticate(ctx, r, t)
+
+		metricsRec.TokenReview(ctx, err == nil, res.Valid, res.Reason)
+
+		return res, err
 	})
 }

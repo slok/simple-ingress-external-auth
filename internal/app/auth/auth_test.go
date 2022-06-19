@@ -14,6 +14,7 @@ import (
 	"github.com/slok/simple-ingress-external-auth/internal/app/auth/authmock"
 	"github.com/slok/simple-ingress-external-auth/internal/internalerrors"
 	"github.com/slok/simple-ingress-external-auth/internal/log"
+	"github.com/slok/simple-ingress-external-auth/internal/metrics"
 	"github.com/slok/simple-ingress-external-auth/internal/model"
 )
 
@@ -126,7 +127,7 @@ func TestServiceAuth(t *testing.T) {
 			mtg := &authmock.TokenGetter{}
 			test.mock(mtg)
 
-			svc := auth.NewService(log.Noop, mtg)
+			svc := auth.NewService(log.Noop, metrics.Noop, mtg)
 
 			gotResp, err := svc.Authenticate(context.TODO(), test.req)
 
