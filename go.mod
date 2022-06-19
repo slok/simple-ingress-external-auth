@@ -3,6 +3,8 @@ module github.com/slok/simple-ingress-external-auth
 go 1.18
 
 require (
+	github.com/drone/envsubst v1.0.3
+	github.com/ghodss/yaml v1.0.0
 	github.com/oklog/run v1.1.0
 	github.com/prometheus/client_golang v1.12.2
 	github.com/sirupsen/logrus v1.8.1
@@ -25,5 +27,6 @@ require (
 	github.com/stretchr/objx v0.1.1 // indirect
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
