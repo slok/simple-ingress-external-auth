@@ -60,10 +60,10 @@ func (s Service) Authenticate(ctx context.Context, req AuthenticateRequest) (*Au
 		return nil, fmt.Errorf("could not get token: %w", err)
 	}
 
-	valid, err := s.authenticater.Authenticate(ctx, req.Review, *token)
+	res, err := s.authenticater.Authenticate(ctx, req.Review, *token)
 	if err != nil {
 		return nil, fmt.Errorf("could not authenticate token: %w", err)
 	}
 
-	return &AuthenticateResponse{Authenticated: valid}, nil
+	return &AuthenticateResponse{Authenticated: res.Valid}, nil
 }
