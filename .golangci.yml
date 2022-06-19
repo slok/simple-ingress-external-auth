@@ -12,3 +12,8 @@ linters:
     - gofmt
     - depguard
     - godot
+issues:
+  exclude-rules:
+    # Go run, doesn't set the VCS version.
+    - path: cmd/simple-ingress-external-auth/simple-ingress-external-auth.go
+      text: "error obtaining VCS status"

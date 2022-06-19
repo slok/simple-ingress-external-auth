@@ -2,7 +2,7 @@ FROM golang:1.18.1
 
 LABEL org.opencontainers.image.source https://github.com/slok/simple-ingress-external-auth
 
-ARG GOLANGCI_LINT_VERSION="1.43.0"
+ARG GOLANGCI_LINT_VERSION="1.46.2"
 ARG MOCKERY_VERSION="2.5.1"
 ARG ostype=Linux
 
