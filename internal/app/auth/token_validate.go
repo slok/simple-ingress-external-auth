@@ -7,84 +7,108 @@ import (
 	"github.com/slok/simple-ingress-external-auth/internal/model"
 )
 
-// Authenticater knows how to authenticate.
-type authenticater interface {
-	Authenticate(ctx context.Context, r model.TokenReview, t model.Token) (valid bool, err error)
+const (
+	reasonInvalidToken  = "invalidToken"
+	reasonExpiredToken  = "expiredToken"
+	reasonInvalidURL    = "invalidURL"
+	reasonInvalidMethod = "invalidMethod"
+	reasonDisabledToken = "disabledToken"
+)
+
+type reviewResult struct {
+	Valid  bool
+	Reason string
 }
 
-type authenticaterFunc func(ctx context.Context, r model.TokenReview, t model.Token) (bool, error)
+// Authenticater knows how to authenticate.
+type authenticater interface {
+	Authenticate(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error)
+}
 
-func (a authenticaterFunc) Authenticate(ctx context.Context, r model.TokenReview, t model.Token) (bool, error) {
+type authenticaterFunc func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error)
+
+func (a authenticaterFunc) Authenticate(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
 	return a(ctx, r, t)
 }
 
 func newAuthenticaterChain(auths ...authenticater) authenticater {
-	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (bool, error) {
+	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
+		var res *reviewResult
+		var err error
 		for _, a := range auths {
-			valid, err := a.Authenticate(ctx, r, t)
+			res, err = a.Authenticate(ctx, r, t)
 			if err != nil {
-				return false, err
+				return nil, err
 			}
 
 			// If not valid, end chain.
-			if !valid {
-				return false, nil
+			if !res.Valid {
+				return res, nil
 			}
 		}
 
-		// Valid.
-		return true, nil
+		return res, nil
 	})
 }
 
 func newTokenExistAuthenticator() authenticater {
-	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (bool, error) {
-		valid := r.Token == t.Value
+	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
+		if r.Token == t.Value {
+			return &reviewResult{Valid: true}, nil
+		}
 
-		return valid, nil
+		return &reviewResult{Valid: false, Reason: reasonInvalidToken}, nil
 	})
 }
 
 func newNotExpiredAuthenticator() authenticater {
-	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (bool, error) {
+	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
 		if t.ExpiresAt.IsZero() {
-			return true, nil
+			return &reviewResult{Valid: true}, nil
 		}
 
-		valid := time.Now().Before(t.ExpiresAt)
+		if time.Now().Before(t.ExpiresAt) {
+			return &reviewResult{Valid: true}, nil
+		}
 
-		return valid, nil
+		return &reviewResult{Valid: false, Reason: reasonExpiredToken}, nil
 	})
 }
 
 func newValidMethodAuthenticator() authenticater {
-	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (bool, error) {
+	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
 		if t.AllowedMethod == nil {
-			return true, nil
+			return &reviewResult{Valid: true}, nil
 		}
 
-		valid := t.AllowedMethod.MatchString(r.HTTPMethod)
+		if t.AllowedMethod.MatchString(r.HTTPMethod) {
+			return &reviewResult{Valid: true}, nil
+		}
 
-		return valid, nil
+		return &reviewResult{Valid: false, Reason: reasonInvalidMethod}, nil
 	})
 }
 
 func newValidURLAuthenticator() authenticater {
-	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (bool, error) {
+	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
 		if t.AllowedURL == nil {
-			return true, nil
+			return &reviewResult{Valid: true}, nil
 		}
 
-		valid := t.AllowedURL.MatchString(r.HTTPURL)
+		if t.AllowedURL.MatchString(r.HTTPURL) {
+			return &reviewResult{Valid: true}, nil
+		}
 
-		return valid, nil
+		return &reviewResult{Valid: false, Reason: reasonInvalidURL}, nil
 	})
 }
 
 func newDisabledAuthenticator() authenticater {
-	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (bool, error) {
-		valid := !t.Disable
+	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
+		if !t.Disable {
+			return &reviewResult{Valid: true}, nil
+		}
 
-		return valid, nil
+		return &reviewResult{Valid: false, Reason: reasonDisabledToken}, nil
 	})
 }
