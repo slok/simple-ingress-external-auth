@@ -11,6 +11,7 @@ import (
 	appauth "github.com/slok/simple-ingress-external-auth/internal/app/auth"
 	httpauthenticate "github.com/slok/simple-ingress-external-auth/internal/http/authenticate"
 	"github.com/slok/simple-ingress-external-auth/internal/log"
+	"github.com/slok/simple-ingress-external-auth/internal/metrics"
 	"github.com/slok/simple-ingress-external-auth/internal/storage/memory"
 )
 
@@ -60,7 +61,7 @@ func TestIntegrationAuthenticate(t *testing.T) {
 			// Create dependencies.
 			repo, err := memory.NewTokenRepository(log.Noop, test.tokens)
 			require.NoError(err)
-			svc := appauth.NewService(log.Noop, repo)
+			svc := appauth.NewService(log.Noop, metrics.Noop, repo)
 
 			// Run server.
 			handler := httpauthenticate.New(log.Noop, svc)

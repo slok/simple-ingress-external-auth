@@ -15,5 +15,5 @@ linters:
 issues:
   exclude-rules:
     # `go run` doesn't set the VCS version.
-    - path: cmd/simple-ingress-external-auth/simple-ingress-external-auth.go
+    - path: cmd/simple-ingress-external-auth/.+
       text: "error obtaining VCS status"

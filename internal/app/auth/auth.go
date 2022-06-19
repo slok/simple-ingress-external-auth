@@ -7,6 +7,7 @@ import (
 
 	"github.com/slok/simple-ingress-external-auth/internal/internalerrors"
 	"github.com/slok/simple-ingress-external-auth/internal/log"
+	"github.com/slok/simple-ingress-external-auth/internal/metrics"
 	"github.com/slok/simple-ingress-external-auth/internal/model"
 )
 
@@ -18,22 +19,26 @@ type TokenGetter interface {
 
 type Service struct {
 	tokenGetter TokenGetter
+	metricsRec  metrics.Recorder
 	logger      log.Logger
 
 	authenticater authenticater
 }
 
-func NewService(logger log.Logger, tokenGetter TokenGetter) Service {
+func NewService(logger log.Logger, metricsRec metrics.Recorder, tokenGetter TokenGetter) Service {
 	return Service{
 		tokenGetter: tokenGetter,
+		metricsRec:  metricsRec,
 		logger:      logger,
 
-		authenticater: newAuthenticaterChain(
-			newTokenExistAuthenticator(),
-			newDisabledAuthenticator(),
-			newNotExpiredAuthenticator(),
-			newValidMethodAuthenticator(),
-			newValidURLAuthenticator(),
+		authenticater: newMeasuredAuthenticator(metricsRec,
+			newAuthenticaterChain(
+				newTokenExistAuthenticator(),
+				newDisabledAuthenticator(),
+				newNotExpiredAuthenticator(),
+				newValidMethodAuthenticator(),
+				newValidURLAuthenticator(),
+			),
 		),
 	}
 }
