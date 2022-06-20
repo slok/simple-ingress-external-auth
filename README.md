@@ -10,7 +10,7 @@ To make this possible normally the ingress controller will forward the request t
 
 When it starts, this application will load a configuration file where it has all the tokens defined (and some other optional properties).
 
-When the ingress-controller forwards the request, this app will check for `Authorization: Bearar <token>` header and validate against the tokens it has defined.
+When the ingress-controller forwards the request, this app will check for `Authorization: Bearer <token>` header and validate against the tokens it has defined.
 
 Examples of ingress controllers configurations for external auth:
 
@@ -20,10 +20,10 @@ Examples of ingress controllers configurations for external auth:
 ## Features
 
 - Simple and easy to deploy (no complex setup, no databases...).
-- Ability to rotate tokens.
+- Ability to rotate tokens (create a new token and add expiration date to the old one).
 - Authenticate Kubernetes ingress easily.
 - Fast and scalable (everything is in memory).
-- Advanced token validation properties (expire data, disable...).
+- Advanced token validation properties (expire date, disable...).
 - Can be used with GRPC (e.g [ingress-nginx grpc](https://kubernetes.github.io/ingress-nginx/examples/grpc/))
 - Different configuration formats (including env vars substitution support).
 
@@ -46,6 +46,17 @@ Content-Type: text/plain; charset=utf-8
 curl -I -H "Authorization: Bearer 6kXEuNEWMYcd1yP16HsgrA==" http://127.0.0.1:8080/auth
 HTTP/1.1 200 OK
 Date: Mon, 20 Jun 2022 05:39:50 GMT
+```
+
+## Token format
+
+There is no restriction on the token format, for this application, it's just an string. You can use `1234567890` (please don't) or a JWT token.
+
+An easy and portable way of generating tokens, would be using the old well known `openssl`, e.g:
+
+```bash
+$ openssl rand -base64 32
+gmMCgSWCDzuBKxznnH7+vCajFnhRIK1+sTRvGJI2g1I=
 ```
 
 ## Advanced optional properties
@@ -114,4 +125,3 @@ tokens:
   allowed_method: PUT
 - value: ${TOKEN_CLIENT_3}
 ```
-
