@@ -68,14 +68,6 @@ Apart from regular token validation, we can use different optional properties:
 - `allowed_url`: Regex that will validate the original URL being requested (Got from `X-Original-URL` header).
 - `allowed_method`: Regex that will validate the original method being requested (Got from `X-Original-Method` header).
 
-## Why this and not basic auth
-
-Although basic auth is simple helpful for web UIs, for APIs is not that good, mainly because:
-
-- More complex to generate the user/pass.
-- Less secure.
-- Can't rotate tokens without downtime (only can be used one at a time).
-
 ## Configuration
 
 The tokens that the application will load will be provisioned with a configuration file (simple and portable). It has some features:
@@ -125,3 +117,32 @@ tokens:
   allowed_method: PUT
 - value: ${TOKEN_CLIENT_3}
 ```
+
+### As a Go API
+
+You can access the configuration as a Go library so you can automate easily the creation of the configuration file.
+
+Import as:
+
+```go
+package main
+
+import (
+ apiv1 "github.com/slok/simple-ingress-external-auth/pkg/api/v1"
+)
+
+func main() {
+ //...
+}
+```
+
+
+[Check this example of generating 1000k tokens](examples/config-generator).
+
+## Why this and not basic auth
+
+Although basic auth is simple helpful for web UIs, for APIs is not that good, mainly because:
+
+- More complex to generate the user/pass.
+- Less secure.
+- Can't rotate tokens without downtime (only can be used one at a time).
