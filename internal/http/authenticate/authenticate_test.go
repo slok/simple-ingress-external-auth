@@ -19,8 +19,8 @@ var tokens = `
 {
 	"version": "v1",
 	"tokens": [
-		{"value": "token0", "client_id": "client0"},
-		{"value": "token1", "client_id": "client1", "disable": true}
+		{"value": "token0"},
+		{"value": "token1", "disable": true}
 	]
 }
 `

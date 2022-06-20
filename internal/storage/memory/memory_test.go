@@ -22,11 +22,9 @@ var (
 	"tokens": [
 		{
 			"value": "t0",
-			"client_id": "c0"
 		},
 		{
 			"value": "t1",
-			"client_id": "c1",
 			"disable": true,
 			"expires_at": "2022-07-04T14:21:22.52Z",
 			"allowed_url": "https://custom.host.slok.dev/.*",
@@ -34,7 +32,6 @@ var (
 		},
 		{
 			"value": "t2",
-			"client_id": "c2",
 			"allowed_method": "PUT"
 		}
 	]
@@ -44,17 +41,14 @@ var (
 version: v1
 tokens:
 - value: t0
-  client_id: c0
 
 - value: t1
-  client_id: c1
   disable: true
   expires_at: 2022-07-04T14:21:22.52Z
   allowed_url: https://custom.host.slok.dev/.*
   allowed_method: (GET|POST)
 
 - value: t2
-  client_id: c2
   allowed_method: PUT
 `
 )
@@ -77,8 +71,7 @@ func TestTokenRepositoryGetToken(t *testing.T) {
 			config: goodJSONConfig,
 			token:  "t0",
 			expToken: &model.Token{
-				Value:    "t0",
-				ClientID: "c0",
+				Value: "t0",
 			},
 		},
 
@@ -87,7 +80,6 @@ func TestTokenRepositoryGetToken(t *testing.T) {
 			token:  "t1",
 			expToken: &model.Token{
 				Value:         "t1",
-				ClientID:      "c1",
 				Disable:       true,
 				ExpiresAt:     time.Date(2022, time.Month(7), 4, 14, 21, 22, 520000000, time.UTC),
 				AllowedURL:    regexp.MustCompile(`https://custom.host.slok.dev/.*`),
@@ -100,7 +92,6 @@ func TestTokenRepositoryGetToken(t *testing.T) {
 			token:  "t1",
 			expToken: &model.Token{
 				Value:         "t1",
-				ClientID:      "c1",
 				Disable:       true,
 				ExpiresAt:     time.Date(2022, time.Month(7), 4, 14, 21, 22, 520000000, time.UTC),
 				AllowedURL:    regexp.MustCompile(`https://custom.host.slok.dev/.*`),
@@ -117,16 +108,14 @@ func TestTokenRepositoryGetToken(t *testing.T) {
 				"version": "v1",
 				"tokens": [
 					{
-						"value": "${TEST_TOKEN}",
-						"client_id": "test-env-client"
+						"value": "${TEST_TOKEN}"
 					}
 				]
 			}
 			`,
 			token: "1234567890",
 			expToken: &model.Token{
-				Value:    "1234567890",
-				ClientID: "test-env-client",
+				Value: "1234567890",
 			},
 		},
 
@@ -138,11 +127,10 @@ func TestTokenRepositoryGetToken(t *testing.T) {
 version: v1
 tokens: 
 - value: ${TEST_TOKEN}
-  client_id: test-env-client`,
+`,
 			token: "1234567890",
 			expToken: &model.Token{
-				Value:    "1234567890",
-				ClientID: "test-env-client",
+				Value: "1234567890",
 			},
 		},
 	}

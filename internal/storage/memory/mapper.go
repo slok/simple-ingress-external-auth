@@ -19,7 +19,6 @@ type configV1 struct {
 
 type configV1Token struct {
 	Value              string    `json:"value"`
-	ClientID           string    `json:"client_id"`
 	Disable            bool      `json:"disable,omitempty"`
 	ExpiresAt          time.Time `json:"expires_at,omitempty"`
 	AllowedURLRegex    string    `json:"allowed_url,omitempty"`
@@ -56,7 +55,6 @@ func mapJSONV1ToModel(data string) (map[string]model.Token, error) {
 
 		token := model.Token{
 			Value:     t.Value,
-			ClientID:  t.ClientID,
 			Disable:   t.Disable,
 			ExpiresAt: t.ExpiresAt,
 		}
