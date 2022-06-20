@@ -10,7 +10,6 @@ import (
 type Token struct {
 	Value         string
 	Disable       bool
-	ClientID      string
 	ExpiresAt     time.Time
 	AllowedURL    *regexp.Regexp
 	AllowedMethod *regexp.Regexp
