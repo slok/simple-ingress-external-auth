@@ -10,20 +10,8 @@ import (
 	"github.com/ghodss/yaml"
 
 	"github.com/slok/simple-ingress-external-auth/internal/model"
+	apiv1 "github.com/slok/simple-ingress-external-auth/pkg/api/v1"
 )
-
-type configV1 struct {
-	Version string          `json:"version"`
-	Tokens  []configV1Token `json:"tokens"`
-}
-
-type configV1Token struct {
-	Value              string    `json:"value"`
-	Disable            bool      `json:"disable,omitempty"`
-	ExpiresAt          time.Time `json:"expires_at,omitempty"`
-	AllowedURLRegex    string    `json:"allowed_url,omitempty"`
-	AllowedMethodRegex string    `json:"allowed_method,omitempty"`
-}
 
 func mapJSONV1ToModel(data string) (map[string]model.Token, error) {
 	// Substitute env vars in the required strings.
@@ -33,7 +21,7 @@ func mapJSONV1ToModel(data string) (map[string]model.Token, error) {
 	}
 
 	// Try loading first in JSON and then YAML.
-	c1 := configV1{}
+	c1 := apiv1.Config{}
 	err = json.Unmarshal([]byte(envedData), &c1)
 	if err != nil {
 		err2 := yaml.Unmarshal([]byte(envedData), &c1)
@@ -53,10 +41,15 @@ func mapJSONV1ToModel(data string) (map[string]model.Token, error) {
 			return nil, fmt.Errorf("token value can't be empty")
 		}
 
+		var expiresAt time.Time
+		if t.ExpiresAt != nil {
+			expiresAt = *t.ExpiresAt
+		}
+
 		token := model.Token{
 			Value:     t.Value,
 			Disable:   t.Disable,
-			ExpiresAt: t.ExpiresAt,
+			ExpiresAt: expiresAt,
 		}
 
 		if t.AllowedMethodRegex != "" {
