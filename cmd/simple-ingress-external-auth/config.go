@@ -24,7 +24,7 @@ type CmdConfig struct {
 // NewCmdConfig returns a new command configuration.
 func NewCmdConfig(args []string) (*CmdConfig, error) {
 	c := &CmdConfig{}
-	app := kingpin.New("rollify", "Online dice rolling application.")
+	app := kingpin.New("simple-ingress-external-auth", "Simple external authentication service for Kubernetes ingresses.")
 	app.DefaultEnvars()
 	app.Version(info.Version)
 
