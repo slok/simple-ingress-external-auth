@@ -1,5 +1,10 @@
 # simple-ingress-external-auth
 
+[![CI](https://github.com/slok/simple-ingress-external-auth/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/slok/simple-ingress-external-auth/actions/workflows/ci.yaml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/slok/simple-ingress-external-auth)](https://goreportcard.com/report/github.com/slok/simple-ingress-external-auth)
+[![Apache 2 licensed](https://img.shields.io/badge/license-Apache2-blue.svg)](https://raw.githubusercontent.com/slok/simple-ingress-external-auth/master/LICENSE)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/slok/simple-ingress-external-auth)](https://github.com/slok/simple-ingress-external-auth/releases/latest)
+
 Easy and simple Kubernetes ingress authentication.
 
 ## How does it work
@@ -27,7 +32,7 @@ Examples of ingress controllers configurations for external auth:
 - Can be used with GRPC (e.g [ingress-nginx grpc](https://kubernetes.github.io/ingress-nginx/examples/grpc/))
 - Different configuration formats (including env vars substitution support).
 
-## Example
+## Examplemessage-bus-server-jazz
 
 ```bash
 $  docker run --rm -it -p 8080:8080 -p 8081:8081 ghcr.io/slok/simple-ingress-external-auth --token-config-data='{"version": "v1","tokens": [{"value": "6kXEuNEWMYcd1yP16HsgrA=="}]}'
