@@ -32,7 +32,7 @@ Examples of ingress controllers configurations for external auth:
 - Can be used with GRPC (e.g [ingress-nginx grpc](https://kubernetes.github.io/ingress-nginx/examples/grpc/))
 - Different configuration formats (including env vars substitution support).
 
-## Examplemessage-bus-server-jazz
+## Example
 
 ```bash
 $  docker run --rm -it -p 8080:8080 -p 8081:8081 ghcr.io/slok/simple-ingress-external-auth --token-config-data='{"version": "v1","tokens": [{"value": "6kXEuNEWMYcd1yP16HsgrA=="}]}'
@@ -141,13 +141,13 @@ func main() {
 }
 ```
 
-
 [Check this example of generating 1000k tokens](examples/config-generator).
 
-## Why this and not basic auth
+## Why tokens and not basic auth
 
-Although basic auth is simple helpful for web UIs, for APIs is not that good, mainly because:
+Although basic auth is simple and easy to use for web UIs, they are not secure. Tokens on the other side yes:
 
-- More complex to generate the user/pass.
-- Less secure.
-- Can't rotate tokens without downtime (only can be used one at a time).
+- Unique: The generated tokens can easily be unique (e.g: use `openssl` or [JWT](https://jwt.io/) to generate the tokens).
+- Revocable: Tokens can have an expiration date, removed or temporally disabled. This gives us the ability to rotate them easily.
+- Limited: Tokens can be narrowly scoped to specific URLs.
+- Random: As with the `Unique` property, the tokens generated can be randomly generated easily with tools like `openssl`.
