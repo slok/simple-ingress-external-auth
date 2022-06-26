@@ -4,16 +4,15 @@ import (
 	"context"
 	"time"
 
-	"github.com/slok/simple-ingress-external-auth/internal/metrics"
 	"github.com/slok/simple-ingress-external-auth/internal/model"
 )
 
 const (
-	reasonInvalidToken  = "invalidToken"
-	reasonExpiredToken  = "expiredToken"
-	reasonInvalidURL    = "invalidURL"
-	reasonInvalidMethod = "invalidMethod"
-	reasonDisabledToken = "disabledToken"
+	ReasonInvalidToken  = "invalidToken"
+	ReasonExpiredToken  = "expiredToken"
+	ReasonInvalidURL    = "invalidURL"
+	ReasonInvalidMethod = "invalidMethod"
+	ReasonDisabledToken = "disabledToken"
 )
 
 type reviewResult struct {
@@ -58,7 +57,7 @@ func newTokenExistAuthenticator() authenticater {
 			return &reviewResult{Valid: true}, nil
 		}
 
-		return &reviewResult{Valid: false, Reason: reasonInvalidToken}, nil
+		return &reviewResult{Valid: false, Reason: ReasonInvalidToken}, nil
 	})
 }
 
@@ -72,7 +71,7 @@ func newNotExpiredAuthenticator() authenticater {
 			return &reviewResult{Valid: true}, nil
 		}
 
-		return &reviewResult{Valid: false, Reason: reasonExpiredToken}, nil
+		return &reviewResult{Valid: false, Reason: ReasonExpiredToken}, nil
 	})
 }
 
@@ -86,7 +85,7 @@ func newValidMethodAuthenticator() authenticater {
 			return &reviewResult{Valid: true}, nil
 		}
 
-		return &reviewResult{Valid: false, Reason: reasonInvalidMethod}, nil
+		return &reviewResult{Valid: false, Reason: ReasonInvalidMethod}, nil
 	})
 }
 
@@ -100,7 +99,7 @@ func newValidURLAuthenticator() authenticater {
 			return &reviewResult{Valid: true}, nil
 		}
 
-		return &reviewResult{Valid: false, Reason: reasonInvalidURL}, nil
+		return &reviewResult{Valid: false, Reason: ReasonInvalidURL}, nil
 	})
 }
 
@@ -110,16 +109,6 @@ func newDisabledAuthenticator() authenticater {
 			return &reviewResult{Valid: true}, nil
 		}
 
-		return &reviewResult{Valid: false, Reason: reasonDisabledToken}, nil
-	})
-}
-
-func newMeasuredAuthenticator(metricsRec metrics.Recorder, a authenticater) authenticater {
-	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
-		res, err := a.Authenticate(ctx, r, t)
-
-		metricsRec.TokenReview(ctx, err == nil, res.Valid, res.Reason)
-
-		return res, err
+		return &reviewResult{Valid: false, Reason: ReasonDisabledToken}, nil
 	})
 }
