@@ -5,14 +5,18 @@ import (
 	"net/http"
 	"strings"
 
+	httpmetrics "github.com/slok/go-http-metrics/middleware"
+	httpmetricsstd "github.com/slok/go-http-metrics/middleware/std"
+
 	"github.com/slok/simple-ingress-external-auth/internal/app/auth"
 	"github.com/slok/simple-ingress-external-auth/internal/log"
+	"github.com/slok/simple-ingress-external-auth/internal/metrics"
 	"github.com/slok/simple-ingress-external-auth/internal/model"
 )
 
 // New returns an HTTP handler that knows how to authenticate external requests.
-func New(logger log.Logger, authAppSvc auth.Service) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func New(logger log.Logger, metricRec metrics.Recorder, authAppSvc auth.Service) http.Handler {
+	authHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Map request to model.
 		review, err := mapRequestToModel(r)
 		if err != nil {
@@ -47,6 +51,12 @@ func New(logger log.Logger, authAppSvc auth.Service) http.Handler {
 
 		w.WriteHeader(http.StatusOK)
 	})
+
+	// Measure handler.
+	metricsMiddleware := httpmetrics.New(httpmetrics.Config{Recorder: metricRec})
+	h := httpmetricsstd.Handler("", metricsMiddleware, authHandler)
+
+	return h
 }
 
 func mapRequestToModel(r *http.Request) (*auth.AuthenticateRequest, error) {

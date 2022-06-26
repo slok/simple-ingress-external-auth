@@ -78,7 +78,7 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
 		appSvc := appauth.NewService(logger, metricsRecorder, repo)
 
 		// Create server.
-		handler := httpauthenticate.New(logger, appSvc)
+		handler := httpauthenticate.New(logger, metricsRecorder, appSvc)
 		mux := http.NewServeMux()
 		mux.Handle(cmdCfg.AuthenticationPath, handler)
 
@@ -89,11 +89,11 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
 
 		g.Add(
 			func() error {
-				logger.Infof("http server listening for requests")
+				logger.Infof("HTTP server listening for requests")
 				return server.ListenAndServe()
 			},
 			func(_ error) {
-				logger.Infof("http server shutdown, draining connections...")
+				logger.Infof("HTTP server shutdown, draining connections...")
 				ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 				defer cancel()
 				err := server.Shutdown(ctx)
@@ -101,7 +101,7 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
 					logger.Errorf("error shutting down server: %w", err)
 				}
 
-				logger.Infof("connections drained")
+				logger.Infof("Connections drained")
 			},
 		)
 	}

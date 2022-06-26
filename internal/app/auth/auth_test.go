@@ -43,14 +43,14 @@ func TestServiceAuth(t *testing.T) {
 			expErr: true,
 		},
 
-		"A token review with a valid token should return that is valid.": {
+		"A token review with a valid token that is missing, should not return as authenticated.": {
 			mock: func(mtg *authmock.TokenGetter) {
 				mtg.On("GetToken", mock.Anything, "missing").Once().Return(nil, internalerrors.ErrNotFound)
 			},
 			req: auth.AuthenticateRequest{Review: model.TokenReview{
 				Token: "missing",
 			}},
-			expResp: &auth.AuthenticateResponse{Authenticated: false},
+			expResp: &auth.AuthenticateResponse{Authenticated: false, Reason: auth.ReasonInvalidToken},
 		},
 
 		"A token review with that is disabled should be invalid.": {
@@ -63,10 +63,10 @@ func TestServiceAuth(t *testing.T) {
 			req: auth.AuthenticateRequest{Review: model.TokenReview{
 				Token: "token0",
 			}},
-			expResp: &auth.AuthenticateResponse{Authenticated: false},
+			expResp: &auth.AuthenticateResponse{Authenticated: false, Reason: auth.ReasonDisabledToken},
 		},
 
-		"A token review that has expired shoud be invalid.": {
+		"A token review that has expired should be invalid.": {
 			mock: func(mtg *authmock.TokenGetter) {
 				mtg.On("GetToken", mock.Anything, "token0").Once().Return(&model.Token{
 					Value:     "token0",
@@ -76,7 +76,7 @@ func TestServiceAuth(t *testing.T) {
 			req: auth.AuthenticateRequest{Review: model.TokenReview{
 				Token: "token0",
 			}},
-			expResp: &auth.AuthenticateResponse{Authenticated: false},
+			expResp: &auth.AuthenticateResponse{Authenticated: false, Reason: auth.ReasonExpiredToken},
 		},
 
 		"A token review with an invalid URL should be invalid.": {
@@ -90,7 +90,7 @@ func TestServiceAuth(t *testing.T) {
 				Token:   "token0",
 				HTTPURL: "https://otherthing.com/api/v1",
 			}},
-			expResp: &auth.AuthenticateResponse{Authenticated: false},
+			expResp: &auth.AuthenticateResponse{Authenticated: false, Reason: auth.ReasonInvalidURL},
 		},
 
 		"A token review with an invalid method should be invalid.": {
@@ -104,10 +104,10 @@ func TestServiceAuth(t *testing.T) {
 				Token:      "token0",
 				HTTPMethod: "GET",
 			}},
-			expResp: &auth.AuthenticateResponse{Authenticated: false},
+			expResp: &auth.AuthenticateResponse{Authenticated: false, Reason: auth.ReasonInvalidMethod},
 		},
 
-		"A token review  that is valid, should be authenticated.": {
+		"A token review that is valid, should be authenticated.": {
 			mock: func(mtg *authmock.TokenGetter) {
 				mtg.On("GetToken", mock.Anything, "token0").Once().Return(&model.Token{
 					Value: "token0",
