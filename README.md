@@ -68,6 +68,7 @@ gmMCgSWCDzuBKxznnH7+vCajFnhRIK1+sTRvGJI2g1I=
 
 Apart from regular token validation, we can use different optional properties:
 
+- `client_id`: Not a security option, but used as metadata, for debugging/auditing purposes and token identification.
 - `disable`: Will disable the token, handy when we want to disable temporally a token.
 - `expires_at`: After the specified timestamp (RFC3339) the token will be invalid. Handy to rotate tokens.
 - `allowed_url`: Regex that will validate the original URL being requested (Got from `X-Original-URL` header).
@@ -87,10 +88,12 @@ The tokens that the application will load will be provisioned with a configurati
  "version": "v1",
  "tokens": [
   {
-   "value": "9bOlMT/vGlWCq56D+Ycgp7eTNj9uQWInbGf4tjRr/P8="
+   "value": "9bOlMT/vGlWCq56D+Ycgp7eTNj9uQWInbGf4tjRr/P8=",
+   "client_id": "test1"
   },
   {
    "value": "NOX11CM2EP9xlP0HsS8NRPNHMmsQKQis7egKGcI+tHQ=",
+   "client_id": "test2",
    "disable": true,
    "expires_at": "2022-07-04T14:21:22.52Z",
    "allowed_url": "https://custom.host.slok.dev/.*",
@@ -98,10 +101,12 @@ The tokens that the application will load will be provisioned with a configurati
   },
   {
    "value": "6yvOSWrLmjC+2Vz8QdwHCjYoHyqWkD+70krxDt5XzlY=",
+   "client_id": "test3",
    "allowed_method": "PUT"
   }
   {
-   "value": "${TOKEN_CLIENT_3}"
+   "value": "${TOKEN_CLIENT_3}",
+   "client_id": "test4"
   }
  ]
 }
@@ -113,14 +118,18 @@ The tokens that the application will load will be provisioned with a configurati
 version: v1
 tokens:
 - value: 9bOlMT/vGlWCq56D+Ycgp7eTNj9uQWInbGf4tjRr/P8=
+  client_id: "test1"
 - value: NOX11CM2EP9xlP0HsS8NRPNHMmsQKQis7egKGcI+tHQ=
+  client_id: "test2"
   disable: true
   expires_at: 2022-07-04T14:21:22.52Z
   allowed_url: https://custom.host.slok.dev/.*
   allowed_method: (GET|POST)
 - value: 6yvOSWrLmjC+2Vz8QdwHCjYoHyqWkD+70krxDt5XzlY=
+  client_id: "test3"
   allowed_method: PUT
 - value: ${TOKEN_CLIENT_3}
+  client_id: "test4"
 ```
 
 ### As a Go API

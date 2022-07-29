@@ -9,6 +9,7 @@ type Config struct {
 
 type Token struct {
 	Value              string     `json:"value"`
+	ClientID           string     `json:"client_id"`
 	Disable            bool       `json:"disable,omitempty"`
 	ExpiresAt          *time.Time `json:"expires_at,omitempty"`
 	AllowedURLRegex    string     `json:"allowed_url,omitempty"`

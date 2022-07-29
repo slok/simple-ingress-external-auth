@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- `client_id` option on tokens to identify the tokens.
+- `client_id` will be shown on token review metrics.
+
 ## [v0.2.0] - 2022-06-26
 
 ### Added

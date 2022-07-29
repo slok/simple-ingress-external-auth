@@ -53,7 +53,7 @@ func TestServiceAuth(t *testing.T) {
 			expResp: &auth.AuthenticateResponse{Authenticated: false, Reason: auth.ReasonInvalidToken},
 		},
 
-		"A token review with that is disabled should be invalid.": {
+		"A token review that is disabled should be invalid.": {
 			mock: func(mtg *authmock.TokenGetter) {
 				mtg.On("GetToken", mock.Anything, "token0").Once().Return(&model.Token{
 					Value:   "token0",
@@ -110,13 +110,14 @@ func TestServiceAuth(t *testing.T) {
 		"A token review that is valid, should be authenticated.": {
 			mock: func(mtg *authmock.TokenGetter) {
 				mtg.On("GetToken", mock.Anything, "token0").Once().Return(&model.Token{
-					Value: "token0",
+					Value:    "token0",
+					ClientID: "client0",
 				}, nil)
 			},
 			req: auth.AuthenticateRequest{Review: model.TokenReview{
 				Token: "token0",
 			}},
-			expResp: &auth.AuthenticateResponse{Authenticated: true},
+			expResp: &auth.AuthenticateResponse{Authenticated: true, ClientID: "client0"},
 		},
 	}
 

@@ -48,6 +48,7 @@ func mapJSONV1ToModel(data string) (map[string]model.Token, error) {
 
 		token := model.Token{
 			Value:     t.Value,
+			ClientID:  t.ClientID,
 			Disable:   t.Disable,
 			ExpiresAt: expiresAt,
 		}

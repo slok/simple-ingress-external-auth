@@ -32,7 +32,7 @@ func NewRecorder(reg prometheus.Registerer) Recorder {
 			Subsystem: "token",
 			Name:      "reviews_total",
 			Help:      "The number of token reviews.",
-		}, []string{"success", "valid", "invalid_reason"}),
+		}, []string{"success", "valid", "client_id", "invalid_reason"}),
 	}
 
 	reg.MustRegister(
@@ -42,9 +42,10 @@ func NewRecorder(reg prometheus.Registerer) Recorder {
 	return r
 }
 
-func (r Recorder) TokenReview(ctx context.Context, success, valid bool, invalidReason string) {
+func (r Recorder) TokenReview(ctx context.Context, success, valid bool, clientID, invalidReason string) {
 	r.tokenReview.WithLabelValues(
 		strconv.FormatBool(success),
 		strconv.FormatBool(valid),
+		clientID,
 		invalidReason).Inc()
 }
