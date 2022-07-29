@@ -19,20 +19,21 @@ func TestRecorder(t *testing.T) {
 	}{
 		"Measure token reviews.": {
 			measure: func(r metricsprometheus.Recorder) {
-				r.TokenReview(context.TODO(), true, true, "")
-				r.TokenReview(context.TODO(), true, true, "")
-				r.TokenReview(context.TODO(), false, false, "")
-				r.TokenReview(context.TODO(), true, false, "something")
-				r.TokenReview(context.TODO(), true, false, "otherthing")
-				r.TokenReview(context.TODO(), true, false, "otherthing")
+				r.TokenReview(context.TODO(), true, true, "client1", "")
+				r.TokenReview(context.TODO(), true, true, "client1", "")
+				r.TokenReview(context.TODO(), false, false, "client1", "")
+				r.TokenReview(context.TODO(), true, false, "client1", "something")
+				r.TokenReview(context.TODO(), true, false, "client1", "otherthing")
+				r.TokenReview(context.TODO(), true, false, "client2", "otherthing")
 			},
 			expMetrics: `
 				# HELP simple_ingress_external_auth_token_reviews_total The number of token reviews.
 				# TYPE simple_ingress_external_auth_token_reviews_total counter
-				simple_ingress_external_auth_token_reviews_total{invalid_reason="",success="false",valid="false"} 1
-				simple_ingress_external_auth_token_reviews_total{invalid_reason="",success="true",valid="true"} 2
-				simple_ingress_external_auth_token_reviews_total{invalid_reason="otherthing",success="true",valid="false"} 2
-				simple_ingress_external_auth_token_reviews_total{invalid_reason="something",success="true",valid="false"} 1
+				simple_ingress_external_auth_token_reviews_total{client_id="client1",invalid_reason="",success="false",valid="false"} 1
+				simple_ingress_external_auth_token_reviews_total{client_id="client1",invalid_reason="",success="true",valid="true"} 2
+				simple_ingress_external_auth_token_reviews_total{client_id="client1",invalid_reason="otherthing",success="true",valid="false"} 1
+				simple_ingress_external_auth_token_reviews_total{client_id="client2",invalid_reason="otherthing",success="true",valid="false"} 1
+				simple_ingress_external_auth_token_reviews_total{client_id="client1",invalid_reason="something",success="true",valid="false"} 1
 			`,
 		},
 	}

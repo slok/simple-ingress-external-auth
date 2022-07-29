@@ -22,9 +22,11 @@ var (
 	"tokens": [
 		{
 			"value": "t0",
+			"client_id": "c0"
 		},
 		{
 			"value": "t1",
+			"client_id": "c1",
 			"disable": true,
 			"expires_at": "2022-07-04T14:21:22.52Z",
 			"allowed_url": "https://custom.host.slok.dev/.*",
@@ -41,8 +43,10 @@ var (
 version: v1
 tokens:
 - value: t0
+  client_id: c0
 
 - value: t1
+  client_id: c1
   disable: true
   expires_at: 2022-07-04T14:21:22.52Z
   allowed_url: https://custom.host.slok.dev/.*
@@ -71,7 +75,8 @@ func TestTokenRepositoryGetToken(t *testing.T) {
 			config: goodJSONConfig,
 			token:  "t0",
 			expToken: &model.Token{
-				Value: "t0",
+				Value:    "t0",
+				ClientID: "c0",
 			},
 		},
 
@@ -80,6 +85,7 @@ func TestTokenRepositoryGetToken(t *testing.T) {
 			token:  "t1",
 			expToken: &model.Token{
 				Value:         "t1",
+				ClientID:      "c1",
 				Disable:       true,
 				ExpiresAt:     time.Date(2022, time.Month(7), 4, 14, 21, 22, 520000000, time.UTC),
 				AllowedURL:    regexp.MustCompile(`https://custom.host.slok.dev/.*`),
@@ -92,6 +98,7 @@ func TestTokenRepositoryGetToken(t *testing.T) {
 			token:  "t1",
 			expToken: &model.Token{
 				Value:         "t1",
+				ClientID:      "c1",
 				Disable:       true,
 				ExpiresAt:     time.Date(2022, time.Month(7), 4, 14, 21, 22, 520000000, time.UTC),
 				AllowedURL:    regexp.MustCompile(`https://custom.host.slok.dev/.*`),

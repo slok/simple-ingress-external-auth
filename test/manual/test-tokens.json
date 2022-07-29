@@ -2,10 +2,12 @@
 	"version": "v1",
 	"tokens": [
 		{
-			"value": "9bOlMT/vGlWCq56D+Ycgp7eTNj9uQWInbGf4tjRr/P8="
+			"value": "9bOlMT/vGlWCq56D+Ycgp7eTNj9uQWInbGf4tjRr/P8=",
+			"client_id": "manual-test-json-1"
 		},
 		{
 			"value": "NOX11CM2EP9xlP0HsS8NRPNHMmsQKQis7egKGcI+tHQ=",
+			"client_id": "manual-test-json-2",
 			"disable": true,
 			"expires_at": "2022-07-04T14:21:22.52Z",
 			"allowed_url": "https://custom.host.slok.dev/.*",

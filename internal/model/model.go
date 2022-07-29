@@ -9,6 +9,7 @@ import (
 // Token value generation example: `openssl rand -base64 32`.
 type Token struct {
 	Value         string
+	ClientID      string
 	Disable       bool
 	ExpiresAt     time.Time
 	AllowedURL    *regexp.Regexp
