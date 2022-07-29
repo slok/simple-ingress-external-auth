@@ -11,5 +11,4 @@ tokens:
   allowed_method: (GET|POST)
 
 - value: 6yvOSWrLmjC+2Vz8QdwHCjYoHyqWkD+70krxDt5XzlY=
-  client_id: "manual-test-yaml-3"
   allowed_method: PUT
