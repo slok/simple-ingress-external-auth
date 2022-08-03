@@ -1,4 +1,4 @@
-FROM golang:1.18.4
+FROM golang:1.19.0
 
 LABEL org.opencontainers.image.source https://github.com/slok/simple-ingress-external-auth
 
