@@ -10,16 +10,18 @@ import (
 
 // CmdConfig represents the configuration of the command.
 type CmdConfig struct {
-	Debug              bool
-	ListenAddress      string
-	AuthenticationPath string
-	TokenConfigData    string
-	TokenConfigFile    string
-	InternalListenAddr string
-	MetricsPath        string
-	HealthCheckPath    string
-	PprofPath          string
-	ClientIDHeader     string
+	Debug               bool
+	ListenAddress       string
+	AuthenticationPath  string
+	TokenConfigData     string
+	TokenConfigFile     string
+	InternalListenAddr  string
+	MetricsPath         string
+	HealthCheckPath     string
+	PprofPath           string
+	ClientIDHeader      string
+	RequestMethodHeader string
+	RequestURLHeader    string
 }
 
 // NewCmdConfig returns a new command configuration.
@@ -38,6 +40,8 @@ func NewCmdConfig(args []string) (*CmdConfig, error) {
 	app.Flag("token-config-data", "The raw data token configuration.").StringVar(&c.TokenConfigData)
 	app.Flag("token-config-file", "The raw data token configuration file (can't be used with token-config-data).").StringVar(&c.TokenConfigFile)
 	app.Flag("client-id-header", "Return the client id as a custom header").Default("X-Ext-Auth-Client-Id").StringVar(&c.ClientIDHeader)
+	app.Flag("request-method-header", "The header to check the original method on the incoming request.").Default("X-Original-Method").StringVar(&c.RequestMethodHeader)
+	app.Flag("request-url-header", "The header to check the original url on the incoming request.").Default("X-Original-URL").StringVar(&c.RequestURLHeader)
 
 	// Internal.
 	app.Flag("internal-listen-address", "The address where the HTTP internal data (metrics, pprof...) server will be listening.").Default(":8081").StringVar(&c.InternalListenAddr)

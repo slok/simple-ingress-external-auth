@@ -17,10 +17,23 @@ When it starts, this application will load a configuration file where it has all
 
 When the ingress-controller forwards the request, this app will check for `Authorization: Bearer <token>` header and validate against the tokens it has defined.
 
-Examples of ingress controllers configurations for external auth:
+## Proxy examples that can be used:
 
-- [ingress-nginx external authentication](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#external-authentication).
-- [traefik forward authentication](https://doc.traefik.io/traefik/v2.0/middlewares/forwardauth/).
+### Nginx
+
+[ingress-nginx external authentication](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#external-authentication):
+
+Nginx is the default configuration used by simple-ingress-external-auth:
+
+- `--request-method-header=X-Original-Method`
+- `--request-url-header=X-Original-URL`
+
+### Traefik
+
+[traefik forward authentication](https://doc.traefik.io/traefik/v2.0/middlewares/forwardauth/) options that can be used on simple-ingress-external-auth:
+
+- `--request-method-header=X-Forwarded-Method`
+- `--request-url-header=X-Forwarded-Uri`
 
 ## Features
 
