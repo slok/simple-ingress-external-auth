@@ -1,6 +1,6 @@
 module github.com/slok/simple-ingress-external-auth
 
-go 1.18
+go 1.19
 
 require (
 	github.com/drone/envsubst v1.0.3

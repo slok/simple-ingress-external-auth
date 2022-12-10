@@ -31,6 +31,7 @@ Examples of ingress controllers configurations for external auth:
 - Advanced token validation properties (expire date, disable...).
 - Can be used with GRPC (e.g [ingress-nginx grpc](https://kubernetes.github.io/ingress-nginx/examples/grpc/))
 - Different configuration formats (including env vars substitution support).
+- Optionally return the authenticated client ID in a header.
 
 ## Example
 

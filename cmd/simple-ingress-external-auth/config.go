@@ -19,7 +19,7 @@ type CmdConfig struct {
 	MetricsPath        string
 	HealthCheckPath    string
 	PprofPath          string
-	ClientIdHeader     string
+	ClientIDHeader     string
 }
 
 // NewCmdConfig returns a new command configuration.
@@ -37,7 +37,7 @@ func NewCmdConfig(args []string) (*CmdConfig, error) {
 	app.Flag("authentication-path", "The path user for authenticating then tokens.").Default("/auth").StringVar(&c.AuthenticationPath)
 	app.Flag("token-config-data", "The raw data token configuration.").StringVar(&c.TokenConfigData)
 	app.Flag("token-config-file", "The raw data token configuration file (can't be used with token-config-data).").StringVar(&c.TokenConfigFile)
-	app.Flag("client-id-header", "Return the client id as a custom header").StringVar(&c.ClientIdHeader)
+	app.Flag("client-id-header", "Return the client id as a custom header").Default("X-Ext-Auth-Client-Id").StringVar(&c.ClientIDHeader)
 
 	// Internal.
 	app.Flag("internal-listen-address", "The address where the HTTP internal data (metrics, pprof...) server will be listening.").Default(":8081").StringVar(&c.InternalListenAddr)

@@ -27,15 +27,15 @@ var tokens = `
 
 func TestIntegrationAuthenticate(t *testing.T) {
 	tests := map[string]struct {
-		tokens         string
-		httpHeaders    map[string]string
-		expCode        int
-		clientIdHeader string
+		tokens      string
+		httpHeaders map[string]string
+		expCode     int
+		expHeaders  map[string]string
 	}{
 		"A request without token, should return 404": {
-			tokens:         tokens,
-			expCode:        http.StatusBadRequest,
-			clientIdHeader: "",
+			tokens:     tokens,
+			expCode:    http.StatusBadRequest,
+			expHeaders: map[string]string{"X-Ext-Auth-Client-Id": ""},
 		},
 
 		"A request with an invalid token, should return 401": {
@@ -43,8 +43,8 @@ func TestIntegrationAuthenticate(t *testing.T) {
 			httpHeaders: map[string]string{
 				"Authorization": "Bearer token1",
 			},
-			expCode:        http.StatusUnauthorized,
-			clientIdHeader: "",
+			expCode:    http.StatusUnauthorized,
+			expHeaders: map[string]string{"X-Ext-Auth-Client-Id": ""},
 		},
 
 		"A request with a valid token, should return 200": {
@@ -52,16 +52,8 @@ func TestIntegrationAuthenticate(t *testing.T) {
 			httpHeaders: map[string]string{
 				"Authorization": "Bearer token0",
 			},
-			expCode:        http.StatusOK,
-			clientIdHeader: "",
-		},
-		"A request with a valid token, should return 200 with a ClientID response header": {
-			tokens: tokens,
-			httpHeaders: map[string]string{
-				"Authorization": "Bearer token0",
-			},
-			expCode:        http.StatusOK,
-			clientIdHeader: "X-Client-Id",
+			expCode:    http.StatusOK,
+			expHeaders: map[string]string{"X-Ext-Auth-Client-Id": "foo"},
 		},
 	}
 
@@ -76,7 +68,7 @@ func TestIntegrationAuthenticate(t *testing.T) {
 			svc := appauth.NewService(log.Noop, metrics.Noop, repo)
 
 			// Run server.
-			handler := httpauthenticate.New(log.Noop, metrics.Noop, svc, test.clientIdHeader)
+			handler := httpauthenticate.New(log.Noop, metrics.Noop, svc, httpauthenticate.HeaderKeys{})
 			server := httptest.NewServer(handler)
 			defer server.Close()
 
@@ -90,9 +82,8 @@ func TestIntegrationAuthenticate(t *testing.T) {
 
 			// Check Status Code
 			assert.Equal(test.expCode, resp.StatusCode)
-			// Check ClientID Header value
-			if test.clientIdHeader != "" {
-				assert.Equal("foo", resp.Header[http.CanonicalHeaderKey(test.clientIdHeader)][0])
+			for k, v := range test.expHeaders {
+				assert.Equal(v, resp.Header.Get(k))
 			}
 		})
 	}
