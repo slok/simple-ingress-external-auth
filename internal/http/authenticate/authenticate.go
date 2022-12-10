@@ -14,11 +14,33 @@ import (
 	"github.com/slok/simple-ingress-external-auth/internal/model"
 )
 
+type HeaderKeys struct {
+	ClientID       string
+	OriginalURL    string
+	OriginalMethod string
+}
+
+func (h *HeaderKeys) defaults() {
+	if h.ClientID == "" {
+		h.ClientID = "X-Ext-Auth-Client-Id"
+	}
+
+	if h.OriginalMethod == "" {
+		h.OriginalMethod = "X-Original-Method"
+	}
+
+	if h.OriginalURL == "" {
+		h.OriginalURL = "X-Original-URL"
+	}
+}
+
 // New returns an HTTP handler that knows how to authenticate external requests.
-func New(logger log.Logger, metricRec metrics.Recorder, authAppSvc auth.Service, clientIdHeader string) http.Handler {
+func New(logger log.Logger, metricRec metrics.Recorder, authAppSvc auth.Service, headerKeys HeaderKeys) http.Handler {
+	headerKeys.defaults()
+
 	authHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Map request to model.
-		review, err := mapRequestToModel(r)
+		review, err := mapRequestToModel(r, headerKeys)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			_, err := w.Write([]byte("error mapping request: " + err.Error()))
@@ -49,10 +71,7 @@ func New(logger log.Logger, metricRec metrics.Recorder, authAppSvc auth.Service,
 			return
 		}
 
-		// If enabled add the ClientId as a response header if the token has a client ID defined
-		if clientIdHeader != "" && resp.ClientID != "" {
-			w.Header().Set(clientIdHeader, resp.ClientID)
-		}
+		w.Header().Set(headerKeys.ClientID, resp.ClientID)
 		w.WriteHeader(http.StatusOK)
 	})
 
@@ -63,11 +82,9 @@ func New(logger log.Logger, metricRec metrics.Recorder, authAppSvc auth.Service,
 	return h
 }
 
-func mapRequestToModel(r *http.Request) (*auth.AuthenticateRequest, error) {
+func mapRequestToModel(r *http.Request, hk HeaderKeys) (*auth.AuthenticateRequest, error) {
 	// Headers.
 	const (
-		originalURL         = "X-Original-URL"
-		originalMethod      = "X-Original-Method"
 		authorization       = "Authorization"
 		authorizationBearer = "Bearer"
 	)
@@ -82,8 +99,8 @@ func mapRequestToModel(r *http.Request) (*auth.AuthenticateRequest, error) {
 	}
 
 	// Get other properties.
-	method := r.Header.Get(originalMethod)
-	url := r.Header.Get(originalURL)
+	method := r.Header.Get(hk.OriginalMethod)
+	url := r.Header.Get(hk.OriginalURL)
 
 	return &auth.AuthenticateRequest{Review: model.TokenReview{
 		Token:      token,
