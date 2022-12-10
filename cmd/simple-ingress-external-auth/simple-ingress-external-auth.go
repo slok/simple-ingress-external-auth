@@ -78,7 +78,7 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
 		appSvc := appauth.NewService(logger, metricsRecorder, repo)
 
 		// Create server.
-		handler := httpauthenticate.New(logger, metricsRecorder, appSvc)
+		handler := httpauthenticate.New(logger, metricsRecorder, appSvc, cmdCfg.ClientIdHeader)
 		mux := http.NewServeMux()
 		mux.Handle(cmdCfg.AuthenticationPath, handler)
 

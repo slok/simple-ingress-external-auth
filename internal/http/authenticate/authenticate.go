@@ -15,7 +15,7 @@ import (
 )
 
 // New returns an HTTP handler that knows how to authenticate external requests.
-func New(logger log.Logger, metricRec metrics.Recorder, authAppSvc auth.Service) http.Handler {
+func New(logger log.Logger, metricRec metrics.Recorder, authAppSvc auth.Service, clientIdHeader string) http.Handler {
 	authHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Map request to model.
 		review, err := mapRequestToModel(r)
@@ -49,6 +49,10 @@ func New(logger log.Logger, metricRec metrics.Recorder, authAppSvc auth.Service)
 			return
 		}
 
+		// If enabled add the ClientId as a response header if the token has a client ID defined
+		if clientIdHeader != "" && resp.ClientID != "" {
+			w.Header().Set(clientIdHeader, resp.ClientID)
+		}
 		w.WriteHeader(http.StatusOK)
 	})
 

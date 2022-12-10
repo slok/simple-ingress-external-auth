@@ -19,7 +19,7 @@ var tokens = `
 {
 	"version": "v1",
 	"tokens": [
-		{"value": "token0"},
+		{"value": "token0", "client_id": "foo"},
 		{"value": "token1", "disable": true}
 	]
 }
@@ -27,13 +27,15 @@ var tokens = `
 
 func TestIntegrationAuthenticate(t *testing.T) {
 	tests := map[string]struct {
-		tokens      string
-		httpHeaders map[string]string
-		expCode     int
+		tokens         string
+		httpHeaders    map[string]string
+		expCode        int
+		clientIdHeader string
 	}{
 		"A request without token, should return 404": {
-			tokens:  tokens,
-			expCode: http.StatusBadRequest,
+			tokens:         tokens,
+			expCode:        http.StatusBadRequest,
+			clientIdHeader: "",
 		},
 
 		"A request with an invalid token, should return 401": {
@@ -41,15 +43,25 @@ func TestIntegrationAuthenticate(t *testing.T) {
 			httpHeaders: map[string]string{
 				"Authorization": "Bearer token1",
 			},
-			expCode: http.StatusUnauthorized,
+			expCode:        http.StatusUnauthorized,
+			clientIdHeader: "",
 		},
 
-		"A request with a valid token, should return 401": {
+		"A request with a valid token, should return 200": {
 			tokens: tokens,
 			httpHeaders: map[string]string{
 				"Authorization": "Bearer token0",
 			},
-			expCode: http.StatusOK,
+			expCode:        http.StatusOK,
+			clientIdHeader: "",
+		},
+		"A request with a valid token, should return 200 with a ClientID response header": {
+			tokens: tokens,
+			httpHeaders: map[string]string{
+				"Authorization": "Bearer token0",
+			},
+			expCode:        http.StatusOK,
+			clientIdHeader: "X-Client-Id",
 		},
 	}
 
@@ -64,7 +76,7 @@ func TestIntegrationAuthenticate(t *testing.T) {
 			svc := appauth.NewService(log.Noop, metrics.Noop, repo)
 
 			// Run server.
-			handler := httpauthenticate.New(log.Noop, metrics.Noop, svc)
+			handler := httpauthenticate.New(log.Noop, metrics.Noop, svc, test.clientIdHeader)
 			server := httptest.NewServer(handler)
 			defer server.Close()
 
@@ -76,8 +88,12 @@ func TestIntegrationAuthenticate(t *testing.T) {
 			resp, err := http.DefaultClient.Do(req)
 			require.NoError(err)
 
-			// Check.
+			// Check Status Code
 			assert.Equal(test.expCode, resp.StatusCode)
+			// Check ClientID Header value
+			if test.clientIdHeader != "" {
+				assert.Equal("foo", resp.Header[http.CanonicalHeaderKey(test.clientIdHeader)][0])
+			}
 		})
 	}
 }
