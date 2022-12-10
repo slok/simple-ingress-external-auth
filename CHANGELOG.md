@@ -6,6 +6,8 @@
 
 - `client_id` now will be returned as a header, by default in `X-Ext-Auth-Client-Id` header.
 - Add `--client-id-header` CMD flag to customize the header that will be returned with the authenticated client.
+- Add `--request-method-header` cmd flag to customize the header that will be checked to get the original request method, by default the one that Nginx uses: `X-Original-Method`.
+- Add `--request-url-header` cmd flag to customize the header that will be checked to get the original request method, by default the one that Nginx uses: `X-Original-URL`.
 
 ## [v0.3.0] - 2022-08-01
 
