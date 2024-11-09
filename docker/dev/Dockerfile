@@ -1,9 +1,9 @@
-FROM golang:1.19.4
+FROM golang:1.23
 
 LABEL org.opencontainers.image.source https://github.com/slok/simple-ingress-external-auth
 
-ARG GOLANGCI_LINT_VERSION="1.50.1"
-ARG MOCKERY_VERSION="2.15.0"
+ARG GOLANGCI_LINT_VERSION="1.61.0"
+ARG MOCKERY_VERSION="2.46.3"
 ARG ostype=Linux
 
 RUN apt-get update && apt-get install -y \
