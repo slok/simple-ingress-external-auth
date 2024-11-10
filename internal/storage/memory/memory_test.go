@@ -27,13 +27,17 @@ var (
 		{
 			"value": "t1",
 			"client_id": "c1",
-			"disable": true,
 			"expires_at": "2022-07-04T14:21:22.52Z",
 			"allowed_url": "https://custom.host.slok.dev/.*",
 			"allowed_method": "(GET|POST)"
 		},
 		{
 			"value": "t2",
+			"allowed_method": "PUT"
+		},
+		{
+			"value": "t3",
+			"disable": true,
 			"allowed_method": "PUT"
 		}
 	]
@@ -47,12 +51,15 @@ tokens:
 
 - value: t1
   client_id: c1
-  disable: true
   expires_at: 2022-07-04T14:21:22.52Z
   allowed_url: https://custom.host.slok.dev/.*
   allowed_method: (GET|POST)
 
 - value: t2
+  allowed_method: PUT
+
+- value: t3
+  disable: true
   allowed_method: PUT
 `
 )
@@ -66,6 +73,12 @@ func TestTokenRepositoryGetStaticTokenValidation(t *testing.T) {
 		expErr   bool
 	}{
 		"If the token is missing, it should fail": {
+			config: goodJSONConfig,
+			token:  "t4",
+			expErr: true,
+		},
+
+		"If the token is disabled, it should fail": {
 			config: goodJSONConfig,
 			token:  "t3",
 			expErr: true,
@@ -88,7 +101,6 @@ func TestTokenRepositoryGetStaticTokenValidation(t *testing.T) {
 				ClientID:  "c1",
 				ExpiresAt: time.Date(2022, time.Month(7), 4, 14, 21, 22, 520000000, time.UTC),
 				Common: model.TokenCommon{
-					Disable:       true,
 					AllowedURL:    regexp.MustCompile(`https://custom.host.slok.dev/.*`),
 					AllowedMethod: regexp.MustCompile(`(GET|POST)`),
 				},
@@ -103,7 +115,6 @@ func TestTokenRepositoryGetStaticTokenValidation(t *testing.T) {
 				ClientID:  "c1",
 				ExpiresAt: time.Date(2022, time.Month(7), 4, 14, 21, 22, 520000000, time.UTC),
 				Common: model.TokenCommon{
-					Disable:       true,
 					AllowedURL:    regexp.MustCompile(`https://custom.host.slok.dev/.*`),
 					AllowedMethod: regexp.MustCompile(`(GET|POST)`),
 				},

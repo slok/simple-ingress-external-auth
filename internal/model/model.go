@@ -15,7 +15,6 @@ type StaticTokenValidation struct {
 }
 
 type TokenCommon struct {
-	Disable       bool
 	AllowedURL    *regexp.Regexp
 	AllowedMethod *regexp.Regexp
 }

@@ -33,7 +33,6 @@ func NewService(logger log.Logger, metricsRec metrics.Recorder, tokenGetter Toke
 
 		authenticater: newAuthenticaterChain(
 			newTokenExistAuthenticator(),
-			newDisabledAuthenticator(),
 			newNotExpiredAuthenticator(),
 			newValidMethodAuthenticator(),
 			newValidURLAuthenticator(),

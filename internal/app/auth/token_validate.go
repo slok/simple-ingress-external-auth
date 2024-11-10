@@ -12,7 +12,6 @@ const (
 	ReasonExpiredToken  = "expiredToken"
 	ReasonInvalidURL    = "invalidURL"
 	ReasonInvalidMethod = "invalidMethod"
-	ReasonDisabledToken = "disabledToken"
 )
 
 type reviewResult struct {
@@ -100,15 +99,5 @@ func newValidURLAuthenticator() authenticater {
 		}
 
 		return &reviewResult{Valid: false, Reason: ReasonInvalidURL}, nil
-	})
-}
-
-func newDisabledAuthenticator() authenticater {
-	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.StaticTokenValidation) (*reviewResult, error) {
-		if !t.Common.Disable {
-			return &reviewResult{Valid: true}, nil
-		}
-
-		return &reviewResult{Valid: false, Reason: ReasonDisabledToken}, nil
 	})
 }

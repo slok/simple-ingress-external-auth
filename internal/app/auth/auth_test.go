@@ -53,21 +53,6 @@ func TestServiceAuth(t *testing.T) {
 			expResp: &auth.AuthenticateResponse{Authenticated: false, Reason: auth.ReasonInvalidToken},
 		},
 
-		"A token review that is disabled should be invalid.": {
-			mock: func(mtg *authmock.TokenGetter) {
-				mtg.On("GetStaticTokenValidation", mock.Anything, "token0").Once().Return(&model.StaticTokenValidation{
-					Value: "token0",
-					Common: model.TokenCommon{
-						Disable: true,
-					},
-				}, nil)
-			},
-			req: auth.AuthenticateRequest{Review: model.TokenReview{
-				Token: "token0",
-			}},
-			expResp: &auth.AuthenticateResponse{Authenticated: false, Reason: auth.ReasonDisabledToken},
-		},
-
 		"A token review that has expired should be invalid.": {
 			mock: func(mtg *authmock.TokenGetter) {
 				mtg.On("GetStaticTokenValidation", mock.Anything, "token0").Once().Return(&model.StaticTokenValidation{
