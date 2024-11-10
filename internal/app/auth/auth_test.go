@@ -35,7 +35,7 @@ func TestServiceAuth(t *testing.T) {
 
 		"A token review with fails while getting the token it should fail.": {
 			mock: func(mtg *authmock.TokenGetter) {
-				mtg.On("GetToken", mock.Anything, "sometoken").Once().Return(nil, fmt.Errorf("something"))
+				mtg.On("GetStaticTokenValidation", mock.Anything, "sometoken").Once().Return(nil, fmt.Errorf("something"))
 			},
 			req: auth.AuthenticateRequest{Review: model.TokenReview{
 				Token: "sometoken",
@@ -45,7 +45,7 @@ func TestServiceAuth(t *testing.T) {
 
 		"A token review with a valid token that is missing, should not return as authenticated.": {
 			mock: func(mtg *authmock.TokenGetter) {
-				mtg.On("GetToken", mock.Anything, "missing").Once().Return(nil, internalerrors.ErrNotFound)
+				mtg.On("GetStaticTokenValidation", mock.Anything, "missing").Once().Return(nil, internalerrors.ErrNotFound)
 			},
 			req: auth.AuthenticateRequest{Review: model.TokenReview{
 				Token: "missing",
@@ -55,9 +55,11 @@ func TestServiceAuth(t *testing.T) {
 
 		"A token review that is disabled should be invalid.": {
 			mock: func(mtg *authmock.TokenGetter) {
-				mtg.On("GetToken", mock.Anything, "token0").Once().Return(&model.Token{
-					Value:   "token0",
-					Disable: true,
+				mtg.On("GetStaticTokenValidation", mock.Anything, "token0").Once().Return(&model.StaticTokenValidation{
+					Value: "token0",
+					Common: model.TokenCommon{
+						Disable: true,
+					},
 				}, nil)
 			},
 			req: auth.AuthenticateRequest{Review: model.TokenReview{
@@ -68,7 +70,7 @@ func TestServiceAuth(t *testing.T) {
 
 		"A token review that has expired should be invalid.": {
 			mock: func(mtg *authmock.TokenGetter) {
-				mtg.On("GetToken", mock.Anything, "token0").Once().Return(&model.Token{
+				mtg.On("GetStaticTokenValidation", mock.Anything, "token0").Once().Return(&model.StaticTokenValidation{
 					Value:     "token0",
 					ExpiresAt: time.Now().Add(-24 * time.Hour),
 				}, nil)
@@ -81,9 +83,11 @@ func TestServiceAuth(t *testing.T) {
 
 		"A token review with an invalid URL should be invalid.": {
 			mock: func(mtg *authmock.TokenGetter) {
-				mtg.On("GetToken", mock.Anything, "token0").Once().Return(&model.Token{
-					Value:      "token0",
-					AllowedURL: regexp.MustCompile("https://something.com/.*"),
+				mtg.On("GetStaticTokenValidation", mock.Anything, "token0").Once().Return(&model.StaticTokenValidation{
+					Value: "token0",
+					Common: model.TokenCommon{
+						AllowedURL: regexp.MustCompile("https://something.com/.*"),
+					},
 				}, nil)
 			},
 			req: auth.AuthenticateRequest{Review: model.TokenReview{
@@ -95,9 +99,11 @@ func TestServiceAuth(t *testing.T) {
 
 		"A token review with an invalid method should be invalid.": {
 			mock: func(mtg *authmock.TokenGetter) {
-				mtg.On("GetToken", mock.Anything, "token0").Once().Return(&model.Token{
-					Value:         "token0",
-					AllowedMethod: regexp.MustCompile("POST"),
+				mtg.On("GetStaticTokenValidation", mock.Anything, "token0").Once().Return(&model.StaticTokenValidation{
+					Value: "token0",
+					Common: model.TokenCommon{
+						AllowedMethod: regexp.MustCompile("POST"),
+					},
 				}, nil)
 			},
 			req: auth.AuthenticateRequest{Review: model.TokenReview{
@@ -109,7 +115,7 @@ func TestServiceAuth(t *testing.T) {
 
 		"A token review that is valid, should be authenticated.": {
 			mock: func(mtg *authmock.TokenGetter) {
-				mtg.On("GetToken", mock.Anything, "token0").Once().Return(&model.Token{
+				mtg.On("GetStaticTokenValidation", mock.Anything, "token0").Once().Return(&model.StaticTokenValidation{
 					Value:    "token0",
 					ClientID: "client0",
 				}, nil)

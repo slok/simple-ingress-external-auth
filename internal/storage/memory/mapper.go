@@ -13,7 +13,7 @@ import (
 	apiv1 "github.com/slok/simple-ingress-external-auth/pkg/api/v1"
 )
 
-func mapJSONV1ToModel(data string) (map[string]model.Token, error) {
+func mapJSONV1ToModel(data string) (map[string]model.StaticTokenValidation, error) {
 	// Substitute env vars in the required strings.
 	envedData, err := envsubst.EvalEnv(data)
 	if err != nil {
@@ -35,7 +35,7 @@ func mapJSONV1ToModel(data string) (map[string]model.Token, error) {
 	}
 
 	// Map.
-	tokens := map[string]model.Token{}
+	tokens := map[string]model.StaticTokenValidation{}
 	for _, t := range c1.Tokens {
 		if t.Value == "" {
 			return nil, fmt.Errorf("token value can't be empty")
@@ -46,11 +46,13 @@ func mapJSONV1ToModel(data string) (map[string]model.Token, error) {
 			expiresAt = *t.ExpiresAt
 		}
 
-		token := model.Token{
+		token := model.StaticTokenValidation{
 			Value:     t.Value,
 			ClientID:  t.ClientID,
-			Disable:   t.Disable,
 			ExpiresAt: expiresAt,
+			Common: model.TokenCommon{
+				Disable: t.Disable,
+			},
 		}
 
 		if t.AllowedMethodRegex != "" {
@@ -58,7 +60,7 @@ func mapJSONV1ToModel(data string) (map[string]model.Token, error) {
 			if err != nil {
 				return nil, fmt.Errorf("could not compile %s regex: %w", t.AllowedMethodRegex, err)
 			}
-			token.AllowedMethod = r
+			token.Common.AllowedMethod = r
 		}
 
 		if t.AllowedURLRegex != "" {
@@ -66,7 +68,7 @@ func mapJSONV1ToModel(data string) (map[string]model.Token, error) {
 			if err != nil {
 				return nil, fmt.Errorf("could not compile %s regex: %w", t.AllowedURLRegex, err)
 			}
-			token.AllowedURL = r
+			token.Common.AllowedURL = r
 		}
 
 		// Check same token is not twice.

@@ -12,7 +12,7 @@ import (
 )
 
 type TokenGetter interface {
-	GetToken(ctx context.Context, tokenValue string) (*model.Token, error)
+	GetStaticTokenValidation(ctx context.Context, tokenValue string) (*model.StaticTokenValidation, error)
 }
 
 //go:generate mockery --case underscore --output authmock --outpkg authmock --name TokenGetter
@@ -68,7 +68,7 @@ func (s Service) Authenticate(ctx context.Context, req AuthenticateRequest) (res
 	logger := s.logger.WithValues(log.Kv{"url": req.Review.HTTPURL, "method": req.Review.HTTPMethod})
 
 	// Get token and its properties.
-	token, err := s.tokenGetter.GetToken(ctx, req.Review.Token)
+	token, err := s.tokenGetter.GetStaticTokenValidation(ctx, req.Review.Token)
 	if err != nil {
 		if errors.Is(err, internalerrors.ErrNotFound) {
 			logger.Infof("Unknown token")

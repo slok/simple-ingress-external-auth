@@ -14,24 +14,24 @@ type TokenGetter struct {
 	mock.Mock
 }
 
-// GetToken provides a mock function with given fields: ctx, tokenValue
-func (_m *TokenGetter) GetToken(ctx context.Context, tokenValue string) (*model.Token, error) {
+// GetStaticTokenValidation provides a mock function with given fields: ctx, tokenValue
+func (_m *TokenGetter) GetStaticTokenValidation(ctx context.Context, tokenValue string) (*model.StaticTokenValidation, error) {
 	ret := _m.Called(ctx, tokenValue)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetToken")
+		panic("no return value specified for GetStaticTokenValidation")
 	}
 
-	var r0 *model.Token
+	var r0 *model.StaticTokenValidation
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (*model.Token, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*model.StaticTokenValidation, error)); ok {
 		return rf(ctx, tokenValue)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) *model.Token); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) *model.StaticTokenValidation); ok {
 		r0 = rf(ctx, tokenValue)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*model.Token)
+			r0 = ret.Get(0).(*model.StaticTokenValidation)
 		}
 	}
 

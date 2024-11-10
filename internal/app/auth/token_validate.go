@@ -22,17 +22,17 @@ type reviewResult struct {
 
 // Authenticater knows how to authenticate.
 type authenticater interface {
-	Authenticate(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error)
+	Authenticate(ctx context.Context, r model.TokenReview, t model.StaticTokenValidation) (*reviewResult, error)
 }
 
-type authenticaterFunc func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error)
+type authenticaterFunc func(ctx context.Context, r model.TokenReview, t model.StaticTokenValidation) (*reviewResult, error)
 
-func (a authenticaterFunc) Authenticate(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
+func (a authenticaterFunc) Authenticate(ctx context.Context, r model.TokenReview, t model.StaticTokenValidation) (*reviewResult, error) {
 	return a(ctx, r, t)
 }
 
 func newAuthenticaterChain(auths ...authenticater) authenticater {
-	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
+	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.StaticTokenValidation) (*reviewResult, error) {
 		var res *reviewResult
 		var err error
 		for _, a := range auths {
@@ -52,7 +52,7 @@ func newAuthenticaterChain(auths ...authenticater) authenticater {
 }
 
 func newTokenExistAuthenticator() authenticater {
-	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
+	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.StaticTokenValidation) (*reviewResult, error) {
 		if r.Token == t.Value {
 			return &reviewResult{Valid: true}, nil
 		}
@@ -62,7 +62,7 @@ func newTokenExistAuthenticator() authenticater {
 }
 
 func newNotExpiredAuthenticator() authenticater {
-	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
+	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.StaticTokenValidation) (*reviewResult, error) {
 		if t.ExpiresAt.IsZero() {
 			return &reviewResult{Valid: true}, nil
 		}
@@ -76,12 +76,12 @@ func newNotExpiredAuthenticator() authenticater {
 }
 
 func newValidMethodAuthenticator() authenticater {
-	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
-		if t.AllowedMethod == nil {
+	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.StaticTokenValidation) (*reviewResult, error) {
+		if t.Common.AllowedMethod == nil {
 			return &reviewResult{Valid: true}, nil
 		}
 
-		if t.AllowedMethod.MatchString(r.HTTPMethod) {
+		if t.Common.AllowedMethod.MatchString(r.HTTPMethod) {
 			return &reviewResult{Valid: true}, nil
 		}
 
@@ -90,12 +90,12 @@ func newValidMethodAuthenticator() authenticater {
 }
 
 func newValidURLAuthenticator() authenticater {
-	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
-		if t.AllowedURL == nil {
+	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.StaticTokenValidation) (*reviewResult, error) {
+		if t.Common.AllowedURL == nil {
 			return &reviewResult{Valid: true}, nil
 		}
 
-		if t.AllowedURL.MatchString(r.HTTPURL) {
+		if t.Common.AllowedURL.MatchString(r.HTTPURL) {
 			return &reviewResult{Valid: true}, nil
 		}
 
@@ -104,8 +104,8 @@ func newValidURLAuthenticator() authenticater {
 }
 
 func newDisabledAuthenticator() authenticater {
-	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.Token) (*reviewResult, error) {
-		if !t.Disable {
+	return authenticaterFunc(func(ctx context.Context, r model.TokenReview, t model.StaticTokenValidation) (*reviewResult, error) {
+		if !t.Common.Disable {
 			return &reviewResult{Valid: true}, nil
 		}
 

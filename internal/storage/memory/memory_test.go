@@ -57,12 +57,12 @@ tokens:
 `
 )
 
-func TestTokenRepositoryGetToken(t *testing.T) {
+func TestTokenRepositoryGetStaticTokenValidation(t *testing.T) {
 	tests := map[string]struct {
 		config   string
 		env      map[string]string
 		token    string
-		expToken *model.Token
+		expToken *model.StaticTokenValidation
 		expErr   bool
 	}{
 		"If the token is missing, it should fail": {
@@ -74,7 +74,7 @@ func TestTokenRepositoryGetToken(t *testing.T) {
 		"An existing token, should be returned (basic)": {
 			config: goodJSONConfig,
 			token:  "t0",
-			expToken: &model.Token{
+			expToken: &model.StaticTokenValidation{
 				Value:    "t0",
 				ClientID: "c0",
 			},
@@ -83,26 +83,30 @@ func TestTokenRepositoryGetToken(t *testing.T) {
 		"An existing token, should be returned (full)": {
 			config: goodJSONConfig,
 			token:  "t1",
-			expToken: &model.Token{
-				Value:         "t1",
-				ClientID:      "c1",
-				Disable:       true,
-				ExpiresAt:     time.Date(2022, time.Month(7), 4, 14, 21, 22, 520000000, time.UTC),
-				AllowedURL:    regexp.MustCompile(`https://custom.host.slok.dev/.*`),
-				AllowedMethod: regexp.MustCompile(`(GET|POST)`),
+			expToken: &model.StaticTokenValidation{
+				Value:     "t1",
+				ClientID:  "c1",
+				ExpiresAt: time.Date(2022, time.Month(7), 4, 14, 21, 22, 520000000, time.UTC),
+				Common: model.TokenCommon{
+					Disable:       true,
+					AllowedURL:    regexp.MustCompile(`https://custom.host.slok.dev/.*`),
+					AllowedMethod: regexp.MustCompile(`(GET|POST)`),
+				},
 			},
 		},
 
 		"An existing token, should be returned (full YAML)": {
 			config: goodYAMLConfig,
 			token:  "t1",
-			expToken: &model.Token{
-				Value:         "t1",
-				ClientID:      "c1",
-				Disable:       true,
-				ExpiresAt:     time.Date(2022, time.Month(7), 4, 14, 21, 22, 520000000, time.UTC),
-				AllowedURL:    regexp.MustCompile(`https://custom.host.slok.dev/.*`),
-				AllowedMethod: regexp.MustCompile(`(GET|POST)`),
+			expToken: &model.StaticTokenValidation{
+				Value:     "t1",
+				ClientID:  "c1",
+				ExpiresAt: time.Date(2022, time.Month(7), 4, 14, 21, 22, 520000000, time.UTC),
+				Common: model.TokenCommon{
+					Disable:       true,
+					AllowedURL:    regexp.MustCompile(`https://custom.host.slok.dev/.*`),
+					AllowedMethod: regexp.MustCompile(`(GET|POST)`),
+				},
 			},
 		},
 
@@ -121,7 +125,7 @@ func TestTokenRepositoryGetToken(t *testing.T) {
 			}
 			`,
 			token: "1234567890",
-			expToken: &model.Token{
+			expToken: &model.StaticTokenValidation{
 				Value: "1234567890",
 			},
 		},
@@ -136,7 +140,7 @@ tokens:
 - value: ${TEST_TOKEN}
 `,
 			token: "1234567890",
-			expToken: &model.Token{
+			expToken: &model.StaticTokenValidation{
 				Value: "1234567890",
 			},
 		},
@@ -160,7 +164,7 @@ tokens:
 			repo, err := memory.NewTokenRepository(log.Noop, test.config)
 			require.NoError(err)
 
-			token, err := repo.GetToken(context.TODO(), test.token)
+			token, err := repo.GetStaticTokenValidation(context.TODO(), test.token)
 
 			if test.expErr {
 				assert.Error(err)

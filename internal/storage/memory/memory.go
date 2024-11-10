@@ -10,7 +10,7 @@ import (
 )
 
 type TokenRepository struct {
-	tokens map[string]model.Token
+	tokens map[string]model.StaticTokenValidation
 }
 
 func NewTokenRepository(logger log.Logger, config string) (*TokenRepository, error) {
@@ -19,12 +19,12 @@ func NewTokenRepository(logger log.Logger, config string) (*TokenRepository, err
 		return nil, err
 	}
 
-	logger.WithValues(log.Kv{"svc": "memory.TokenRepository", "tokens": len(tokens)}).Infof("Tokens loaded")
+	logger.WithValues(log.Kv{"svc": "memory.TokenRepository", "tokens": len(tokens)}).Infof("Token validations loaded")
 
 	return &TokenRepository{tokens: tokens}, nil
 }
 
-func (t TokenRepository) GetToken(ctx context.Context, tokenValue string) (*model.Token, error) {
+func (t TokenRepository) GetStaticTokenValidation(ctx context.Context, tokenValue string) (*model.StaticTokenValidation, error) {
 	token, ok := t.tokens[tokenValue]
 	if !ok {
 		return nil, fmt.Errorf("token not found: %w", internalerrors.ErrNotFound)
