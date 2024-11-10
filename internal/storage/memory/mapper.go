@@ -41,6 +41,10 @@ func mapJSONV1ToModel(data string) (map[string]model.StaticTokenValidation, erro
 			return nil, fmt.Errorf("token value can't be empty")
 		}
 
+		if t.Disable {
+			continue
+		}
+
 		var expiresAt time.Time
 		if t.ExpiresAt != nil {
 			expiresAt = *t.ExpiresAt
@@ -50,9 +54,6 @@ func mapJSONV1ToModel(data string) (map[string]model.StaticTokenValidation, erro
 			Value:     t.Value,
 			ClientID:  t.ClientID,
 			ExpiresAt: expiresAt,
-			Common: model.TokenCommon{
-				Disable: t.Disable,
-			},
 		}
 
 		if t.AllowedMethodRegex != "" {
