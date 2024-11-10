@@ -5,13 +5,17 @@ import (
 	"time"
 )
 
-// Token represents an auth token that can be used to validate an authentication.
+// StaticTokenValidation represents an auth static token information that can be used to validate an authentication.
 // Token value generation example: `openssl rand -base64 32`.
-type Token struct {
-	Value         string
-	ClientID      string
+type StaticTokenValidation struct {
+	Value     string
+	ClientID  string
+	ExpiresAt time.Time
+	Common    TokenCommon
+}
+
+type TokenCommon struct {
 	Disable       bool
-	ExpiresAt     time.Time
 	AllowedURL    *regexp.Regexp
 	AllowedMethod *regexp.Regexp
 }

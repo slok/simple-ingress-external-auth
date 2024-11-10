@@ -7,11 +7,16 @@ type Config struct {
 	Tokens  []Token `json:"tokens"`
 }
 
+type Common struct {
+	Disable            bool   `json:"disable,omitempty"`
+	AllowedURLRegex    string `json:"allowed_url,omitempty"`
+	AllowedMethodRegex string `json:"allowed_method,omitempty"`
+}
+
 type Token struct {
-	Value              string     `json:"value"`
-	ClientID           string     `json:"client_id"`
-	Disable            bool       `json:"disable,omitempty"`
-	ExpiresAt          *time.Time `json:"expires_at,omitempty"`
-	AllowedURLRegex    string     `json:"allowed_url,omitempty"`
-	AllowedMethodRegex string     `json:"allowed_method,omitempty"`
+	Common
+
+	Value     string     `json:"value"`
+	ClientID  string     `json:"client_id"`
+	ExpiresAt *time.Time `json:"expires_at,omitempty"`
 }
