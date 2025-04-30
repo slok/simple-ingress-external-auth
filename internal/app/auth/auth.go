@@ -15,8 +15,6 @@ type TokenGetter interface {
 	GetStaticTokenValidation(ctx context.Context, tokenValue string) (*model.StaticTokenValidation, error)
 }
 
-//go:generate mockery --case underscore --output authmock --outpkg authmock --name TokenGetter
-
 type Service struct {
 	tokenGetter TokenGetter
 	metricsRec  metrics.Recorder
