@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v0.5.0] - 2025-04-30
+
 ### Changed
 
 - Disabled tokens now will act as missing/unknown tokens, they will not return "disabledToken" error nor metric.
@@ -40,7 +42,8 @@
 - Add token review Prometheus metrics.
 - Make configuration API public as a go library.
 
-[unreleased]: https://github.com/slok/simple-ingress-external-auth/compare/v0.4.0...HEAD
+[unreleased]: https://github.com/slok/simple-ingress-external-auth/compare/v0.5.0...HEAD
+[v0.5.0]: https://github.com/slok/simple-ingress-external-auth/compare/v0.4.0...v0.5.0
 [v0.4.0]: https://github.com/slok/simple-ingress-external-auth/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/slok/simple-ingress-external-auth/compare/v0.2.0...v0.3.0
 [v0.2.0]: https://github.com/slok/simple-ingress-external-auth/compare/v0.1.0...v0.2.0
