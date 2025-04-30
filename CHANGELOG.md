@@ -5,6 +5,7 @@
 ### Changed
 
 - Disabled tokens now will act as missing/unknown tokens, they will not return "disabledToken" error nor metric.
+- Dependency upgrades
 
 ## [v0.4.0] - 2022-12-10
 
