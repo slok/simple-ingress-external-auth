@@ -9,14 +9,14 @@ jobs:
     # Execute the checks inside the container instead the VM.
     container: golangci/golangci-lint:v2.1.5-alpine
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: ./scripts/check/check.sh
 
   unit-test:
     name: Unit test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
@@ -38,7 +38,7 @@ jobs:
     name: Release images
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Docker login
         run: docker login ghcr.io -u ${{ github.actor }} -p "${{ secrets.GITHUB_TOKEN }}"
       - name: Build and publish docker images
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "VERSION=${GITHUB_REF#refs/*/}" >> ${GITHUB_ENV} # Sets VERSION env var.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Docker login
         run: docker login ghcr.io -u ${{ github.actor }} -p "${{ secrets.GITHUB_TOKEN }}"
       - name: Build and publish docker images
