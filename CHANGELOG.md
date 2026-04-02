@@ -1,6 +1,10 @@
 # Changelog
 
-## [Unreleased]
+## [v0.7.0] - 2026-04-02
+
+### Changed
+
+- Update to go 1.26
 
 ## [v0.6.0] - 2025-11-25
 
@@ -48,7 +52,8 @@
 - Add token review Prometheus metrics.
 - Make configuration API public as a go library.
 
-[unreleased]: https://github.com/slok/simple-ingress-external-auth/compare/v0.6.0...HEAD
+[unreleased]: https://github.com/slok/simple-ingress-external-auth/compare/v0.7.0...HEAD
+[v0.7.0]: https://github.com/slok/simple-ingress-external-auth/compare/v0.6.0...v0.7.0
 [v0.6.0]: https://github.com/slok/simple-ingress-external-auth/compare/v0.5.0...v0.6.0
 [v0.5.0]: https://github.com/slok/simple-ingress-external-auth/compare/v0.4.0...v0.5.0
 [v0.4.0]: https://github.com/slok/simple-ingress-external-auth/compare/v0.3.0...v0.4.0
